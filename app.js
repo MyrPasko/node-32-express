@@ -4,21 +4,25 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 /** This is for Handlebars */
-const expressHbs = require('express-handlebars');
+// const expressHbs = require('express-handlebars');
 
 const app = express();
 
+/** This is for EJS */
+app.set('view engine', 'ejs');
+
 /** This is for Handlebars */
-app.engine('hbs', expressHbs({
-    layoutsDir: 'views/layouts',
-    defaultLayout: 'main-layout',
-    extname: 'hbs'
-}));
-app.set('view engine', 'hbs');
+// app.engine('hbs', expressHbs({
+//     layoutsDir: 'views/layouts',
+//     defaultLayout: 'main-layout',
+//     extname: 'hbs'
+// }));
+// app.set('view engine', 'hbs');
 
 /** This is for Pug */
 // app.set('view engine', 'pug');
-// app.set('view engine', 'pug');
+
+
 app.set('views', 'views');
 
 const adminData = require('./routes/admin');
@@ -52,6 +56,7 @@ app.use((req, res, next) => {
     // .sendFile(path.join(__dirname, 'views', '404.html'))
     /** And this is for PUG */
     /** And this is for Handlebars too */
+    /** And this is for EJS too */
     res.render('404', {pageTitle: '404'});
 
 });

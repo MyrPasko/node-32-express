@@ -16,6 +16,7 @@ router.get('/', (req, res, next) => {
     /** And this is for Handlebars too */
     const products = adminData.products;
     /** 'HasProducts', 'activeShop', 'productCSS' keys is only for Handlebars */
+    /** And this is for EJS too */
     res.render('shop', {
         prods: products,
         pageTitle: 'shop',
@@ -25,6 +26,5 @@ router.get('/', (req, res, next) => {
         productCSS: true
     });
 });
-
 
 module.exports = router;

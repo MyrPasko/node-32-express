@@ -18,6 +18,7 @@ router.get('/add-product', (req, res, next) => {
     /** And this is for PUG */
     /** And this is for Handlebars too */
     /** 'activeAddProduct', 'formCSS', 'productCSS' are for Handlebars only */
+    /** And this is for EJS too */
     res.render('add-product', {
         pageTitle: 'add-product',
         path: '/admin/add-product',
