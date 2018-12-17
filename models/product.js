@@ -5,7 +5,7 @@ const fullPath = require('../util/path');
 const p = path.join(fullPath, 'data', 'products.json');
 
 const getProductsFromFile = (callback) => {
-    console.log("Controller get products from file");
+    // console.log("Controller get products from file");
     fs.readFile(p, (err, fileContent) => {
         if (err) {
             return callback([]);
@@ -24,8 +24,9 @@ module.exports = class Product {
     }
 
     save() {
+        this.id = Math.random().toString();
         getProductsFromFile((products) => {
-            console.log("From Controller save");
+            // console.log("From Controller save");
             products.push(this);
             fs.writeFile(p, JSON.stringify(products), (err) => {
                 console.log(err);
@@ -35,6 +36,15 @@ module.exports = class Product {
 
     static fetchAll(callback) {
         getProductsFromFile(callback);
+    }
+
+    static findById(id, callback) {
+        getProductsFromFile((products) => {
+            const product = products.find((p) => {
+                return p.id === id;
+            });
+            callback(product);
+        })
     }
 
 };

@@ -1,5 +1,6 @@
 // const products = [];
 const Product = require('../models/product');
+const Cart = require('../models/cart');
 
 exports.getProducts = (req, res, next) => {
     console.log("Get Products");
@@ -10,6 +11,18 @@ exports.getProducts = (req, res, next) => {
             path: '/products'
         });
     });
+};
+
+exports.getProduct = (req, res, next) => {
+    const prodId = req.params.productId;  // here we take rout parameter, product id.
+    Product.findById(prodId, (product) => {
+        console.log("Chosen product: ", product);
+        res.render('shop/product-detail', {
+            product: product,
+            pageTitle: "Product detail",
+            path: `/products`    // this uses only for highlighting header menu in the case
+        })
+    })
 };
 
 exports.getIndex = (req, res, next) => {
@@ -30,6 +43,15 @@ exports.getCart = (req, res, next) => {
         pageTitle: 'Your Cart',
         path: '/cart'
     })
+};
+
+exports.postCart = (req, res, next) => {
+    const prodId = req.body.productId;  // this is from form hidden input
+    Product.findById(prodId, (product) => {
+        Cart.addProduct(prodId, product.price)
+    });
+    res.redirect('/cart')
+
 };
 
 exports.getCheckout = (req, res, next) => {
