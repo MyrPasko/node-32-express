@@ -10,8 +10,10 @@ module.exports = class Cart {
         // Fetch the previous cart
         fs.readFile(p, (err, fileContent) => {
             let cart = {products: [], totalPrice: 0};
+
+            // console.log(err, JSON.parse(fileContent));
             if (!err) {
-                cart = JSON.parse(fileContent)
+                cart = JSON.parse(fileContent);
             }
             // Analyze th cart -> Find existing product
             const existingProductIndex = cart.products.findIndex(product => product.id === id);
@@ -31,7 +33,7 @@ module.exports = class Cart {
                 };
                 cart.products = [...cart.products, updatedProduct];
             }
-            cart.totalPrice = cart.totalPrice + +productPrice;
+            cart.totalPrice = cart.totalPrice + Number(productPrice);
             fs.writeFile(p, JSON.stringify(cart), (err) => {
                 console.log(err);
             })

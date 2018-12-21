@@ -3,7 +3,7 @@ const Product = require('../models/product');
 const Cart = require('../models/cart');
 
 exports.getProducts = (req, res, next) => {
-    console.log("Get Products");
+    // console.log("Get Products");
     Product.fetchAll((products) => {
         res.render('shop/product-list', {
             prods: products,
@@ -16,7 +16,7 @@ exports.getProducts = (req, res, next) => {
 exports.getProduct = (req, res, next) => {
     const prodId = req.params.productId;  // here we take rout parameter, product id.
     Product.findById(prodId, (product) => {
-        console.log("Chosen product: ", product);
+        // console.log("Chosen product: ", product);
         res.render('shop/product-detail', {
             product: product,
             pageTitle: "Product detail",
@@ -26,7 +26,7 @@ exports.getProduct = (req, res, next) => {
 };
 
 exports.getIndex = (req, res, next) => {
-    console.log("Get Index");
+    // console.log("Get Index");
 
     Product.fetchAll((products) => {
         res.render('shop/index', {
@@ -38,7 +38,7 @@ exports.getIndex = (req, res, next) => {
 };
 
 exports.getCart = (req, res, next) => {
-    console.log("Get cart");
+    // console.log("Get cart");
     res.render('shop/cart', {
         pageTitle: 'Your Cart',
         path: '/cart'
@@ -50,12 +50,12 @@ exports.postCart = (req, res, next) => {
     Product.findById(prodId, (product) => {
         Cart.addProduct(prodId, product.price)
     });
-    res.redirect('/cart')
+    res.redirect('/cart');
 
 };
 
 exports.getCheckout = (req, res, next) => {
-    console.log("Get checkout");
+    // console.log("Get checkout");
     res.render('shop/checkout', {
         pageTitle: 'Checkout',
         path: '/checkout'
@@ -63,7 +63,7 @@ exports.getCheckout = (req, res, next) => {
 };
 
 exports.getOrders = (req, res, next) => {
-    console.log("Get orders");
+    // console.log("Get orders");
     res.render('shop/orders', {
         pageTitle: 'Yours orders',
         path: '/orders'
