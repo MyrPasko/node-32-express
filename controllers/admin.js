@@ -10,7 +10,9 @@ exports.getAddProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-    Product.findAll()
+    // Product.findAll()
+    req.user
+        .getProducts()                    // this will get all products for current user.
         .then((products) => {
             res.render('admin/products', {
                 prods: products,
@@ -28,13 +30,16 @@ exports.postAddProduct = (req, res, next) => {
     const imageUrl = req.body.imageUrl;
     const price = req.body.price;
     const description = req.body.description;
+    // const userId = req.user.id;
 
-    Product.create({                            // immediately creates new product
-        title,
-        imageUrl,
-        price,
-        description,
-    })
+    req.user
+        .createProduct({
+            title,
+            imageUrl,
+            price,
+            description,
+            // userId
+        })
         .then((result) => {
             // console.log("Result from postAddProduct: ", result);
             console.log("Product created from postAddProduct: ");
@@ -53,20 +58,26 @@ exports.getEditProduct = (req, res, next) => {
     console.log(req.query, req.params);
     const prodId = req.params.productId;
 
-    Product.findById(prodId)
+    // req.user.getProducts({
+    //     where: {
+    //         id: prodId
+    //     }
+    // })
+    Product.findById(prodId)            // alternative way
         .then((product) => {
+            // const product = products[0];
             if (!product) {
                 return res.redirect('/');
             }
             res.render('admin/edit-product', {
                 pageTitle: 'Edit product',
                 path: `/admin/edit-product`,
-                editing: true,
+                editing: editMode,
                 product: product,
             })
         })
         .catch((err) => {
-
+            console.log("Error from getEditProduct: ", err);
         });
 };
 

@@ -6,8 +6,11 @@ const bodyParser = require('body-parser');
 // const db = require('./util/database');
 const errorController = require('./controllers/error');
 const sequelize = require('./util/database');
+
 const Product = require('./models/product');
 const User = require('./models/user');
+const Cart = require('./models/cart');
+const CartItem = require('./models/cart-item');
 
 const app = express();
 
@@ -17,8 +20,19 @@ app.set('views', 'views');
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use((req, res, next) => {  // It's just middleware for incoming requests.
+    User.findById(1)               // It will be executed only after successful start of our server.
+        .then((user) => {
+            req.user = user;       // sequelized object
+            next();                // move logic to the next step.
+        })
+        .catch((err) => {
+            console.log("Error from app middleware: ", err);
+        });
+});
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
@@ -28,11 +42,26 @@ app.use(errorController.get404);
 /** For Sequelize */
 Product.belongsTo(User, {constraints: true, onDelete: "CASCADE"});
 User.hasMany(Product);
+User.hasOne(Cart);
+Cart.belongsTo(User);
+Cart.belongsToMany(Product, {through: CartItem});
+Product.belongsToMany(Cart, {through: CartItem});
 
-sequelize.sync({force: true})
+
+sequelize
+.sync({force: true})
+    // .sync()
     .then((result) => {
-        // console.log(result);
-        /** For Sequelize */
+        return User.findById(1);
+    })
+    .then((user) => {
+        if (!user) {
+            User.create({name: "Myroslav", eMail: "test@test.ua"})
+        }
+        return user;
+    })
+    .then((user) => {
+        console.log("User from sync: ", user);
         app.listen(3000);
     })
     .catch((error) => {

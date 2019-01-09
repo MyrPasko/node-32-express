@@ -28,8 +28,6 @@ const Product = sequelize.define('product', {
 
 module.exports = Product;
 
-
-
 /** For essential MySQL */
 
 // const db = require('../util/database');
