@@ -64,39 +64,86 @@ exports.getIndex = (req, res, next) => {
 };
 
 exports.getCart = (req, res, next) => {
-    Cart.getCart((cart) => {
-        Product.fetchAll((products) => {
-            const cartProducts = [];
-            for (let product of products) {
-                const cartProductData = cart.products.find(prod => prod.id === product.id);
-                if (cartProductData) {
-                    cartProducts.push({productData: product, quantity: cartProductData.quantity});
-                }
-            }
+    req.user.getCart()
+        .then((cart) => {
+            console.log("Cart from getCart: ", cart);
+            return cart.getProducts()
+                .then((cartProducts) => {
+                    res.render('shop/cart', {
+                        path: '/cart',
+                        pageTitle: 'Your Cart',
+                        products: cartProducts
+                    })
+                })
+                .catch((err) => {
+                    console.log("Error from getCart/getProducts: ", err);
 
-            res.render('shop/cart', {
-                path: '/cart',
-                pageTitle: 'Your Cart',
-                products: cartProducts
-            })
+                });
+        })
+        .catch((err) => {
+            console.log("Error from getCart: ", err);
         });
-    });
 };
 
 exports.postCart = (req, res, next) => {
     const prodId = req.body.productId;  // this is from form hidden input
-    Product.findById(prodId, (product) => {
-        Cart.addProduct(prodId, product.price)
-    });
-    res.redirect('/cart');
+    let fetchedCart;
+    let newQuantity = 1;
+
+    req.user.getCart()
+        .then((cart) => {
+            console.log("Cart from postCard: ", cart);
+            fetchedCart = cart;
+            return cart.getProducts({where: {id: prodId}});
+        })
+        .then((products) => {
+            let product;
+            if (products.length > 0) {
+                product = products[0]
+            }
+            if (product) {
+                const oldQuantity = product.cartItem.quantity;
+                newQuantity = oldQuantity + 1;
+                return product;
+            }
+            return Product.findById(prodId)
+        })
+        .then((product) => {
+            console.log("Product from getCart/findById: ", product);
+            return fetchedCart.addProduct(product, {
+                through: {
+                    quantity: newQuantity
+                }
+            })
+        })
+        .then(() => {
+            res.redirect('/cart');
+        })
+        .catch((err) => {
+            console.log("Error from postCard: ", err);
+        });
+    // Product.findById(prodId, (product) => {
+    //     Cart.addProduct(prodId, product.price)
+    // });
+    // res.redirect('/cart');
 };
 
 exports.postCartDeleteProduct = (req, res, next) => {
     const prodId = req.body.productId;
-    Product.findById(prodId, (product) => {
-        Cart.deleteProduct(prodId, product.price);
-        res.redirect('/cart');
-    })
+    req.user.getCart()
+        .then((cart) => {
+            return cart.getProducts({where: {id: prodId}})
+        })
+        .then((products) => {
+            const product = products[0];
+            return product.cartItem.destroy();
+        })
+        .then((result) => {
+            res.redirect('/cart');
+        })
+        .catch((err) => {
+            console.log("Error from postCartDeleteProduct: ", err);
+        });
 };
 
 exports.getCheckout = (req, res, next) => {
