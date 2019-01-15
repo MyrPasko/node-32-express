@@ -42,38 +42,38 @@ app.use(shopRoutes);
 app.use(errorController.get404);
 
 /** For Sequelize */
-Product.belongsTo(User, {constraints: true, onDelete: "CASCADE"});
+Product.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
 User.hasMany(Product);
 User.hasOne(Cart);
 Cart.belongsTo(User);
-Cart.belongsToMany(Product, {through: CartItem});
-Product.belongsToMany(Cart, {through: CartItem});
+Cart.belongsToMany(Product, { through: CartItem });
+Product.belongsToMany(Cart, { through: CartItem });
 Order.belongsTo(User);
 User.hasMany(Order);
-Order.belongsToMany(Product, {through: OrderItem});
-
+Order.belongsToMany(Product, { through: OrderItem });
 
 sequelize
-// .sync({force: true})
+// .sync({ force: true })
     .sync()
-    .then((result) => {
+    .then(result => {
         return User.findById(1);
+        // console.log(result);
     })
-    .then((user) => {
+    .then(user => {
         if (!user) {
-            User.create({name: "Myroslav", eMail: "test@test.ua"})
+            return User.create({ name: 'Max', email: 'test@test.com' });
         }
         return user;
     })
-    .then((user) => {
-        console.log("User from sync: ", user);
+    .then(user => {
+        // console.log(user);
         return user.createCart();
     })
-    .then((cart) => {
+    .then(cart => {
         app.listen(3000);
     })
-    .catch((error) => {
-        console.log(error);
+    .catch(err => {
+        console.log(err);
     });
 
 /** For normal application */
