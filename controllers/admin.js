@@ -9,6 +9,7 @@ exports.getAddProduct = (req, res, next) => {
     });
 };
 
+
 exports.getProducts = (req, res, next) => {
     // Product.findAll()
     req.user
